@@ -4,16 +4,25 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
   <title>TODO Project - Frontend Index</title>
-  <link rel="stylesheet" href="static.css">
+  <link rel="stylesheet" href="frontend.css">
 </head>
 <body>
   <h1>Frontend</h1>
-  <h2>Create a new TODO. Enter a new description: </h2>
-  <form action='localhost:5000/todo' method="POST">
-    <label for="description">Description:</label><br>
-    <input type="text" id="description" name="description"><br><br>
-    <input type="submit" value="Submit" id="submitbutton">
+  <form id="form" action="/todo" method="POST">
+    <label for="description">TODO Description: </label><br>
+    <input type="text" id="desc" name="description"><br><br>
+    <button id="sbutton">Add new TODO</button>
   </form>
-  <script src="static.js"></script>
+  <br><br><br>
+  <div>
+    <table style="width:40%" id="table">
+      <tr>
+        <th id="descr">Description</th>
+        <th id="datetime">Date/Time</th>
+        <th id="dbutton">Delete?</th>
+      </tr>
+    </table>
+  </div>
+  <script src="frontend.js"></script>
 </body>
 </html>
