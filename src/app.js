@@ -23,8 +23,7 @@ function createTODO(req) {
 app.post('/todo', cors(), (req, res) => {
     const newTODO = createTODO(req);
     TODOarray.push(newTODO);
-    //res.send(res.statusCode);
-    res.redirect('/');
+    res.send(res.statusCode);
 });
 
 // Backend (GET /todo)

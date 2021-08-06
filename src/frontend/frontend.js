@@ -1,3 +1,21 @@
+// Create table
+function makeTable(data) {
+    const toremove = document.getElementsByClassName("newrow");
+    for(let i = 0; i < toremove.length; i++) {
+        toremove[i].innerHTML = "";
+    }
+    const todotable = document.getElementById("table");
+    for (let i = 0; i < data.length; i++) {
+        const entrybody = document.createElement('tr');
+        entrybody.className = "newrow";
+        entrybody.id = data[i].id;
+        entrybody.appendChild(newTD(data[i].description));
+        entrybody.appendChild(newTD(data[i].dateTime));
+        entrybody.appendChild(deleteButton(data[i].id));
+        todotable.appendChild(entrybody);
+    }
+}
+
 // Create new table entry with specific data
 function newTD(data) {
     const td_element = document.createElement('td');
@@ -8,46 +26,43 @@ function newTD(data) {
 // Create delete button for a table entry
 function deleteButton(id) {
     const del = document.createElement('button');
+    del.id = "confirmdel";
+    del.innerText = "Delete TODO";
     del.onclick = function() {
         // DELETE Handler
-        const DELETEreq = new XMLHttpRequest();
-        DELETEreq.open("DELETE", `/todo/${id}`, true);
-        DELETEreq.send();
-        console.log(`Deleting ID#${id}...`);
+        console.log(`Deleted ID#${id}...`);
+        fetch(`/todo/${id}`, {
+            method: 'DELETE',
+            body: id
+        }).catch(err => console.log(err))
         document.getElementById(id).remove();
+        GETrequest();
     };
     return del;
 }
-/*
-//POST Handler
-document.getElementById("sbutton").onclick = function() {
-    const POSTreq = new XMLHttpRequest();
-    POSTreq.open("POST", "/todo", true);
-    POSTreq.setRequestHeader('Content-Type', 'application/json');
-    // How to get the text from the input into the send()
-    const form = document.getElementById("form");
-    const FD = new FormData(form);
-    POSTreq.send(FD);
-};
-*/
-//GET Handler
-const GETreq = new XMLHttpRequest();
-GETreq.open("GET", "/todo", true);
-GETreq.addEventListener("load", function() {
-    if(this.status !== 200 || !this.responseText) {
-        console.error("Error");
-        return;
+
+// POST Handler
+const form = document.getElementById("form");
+form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const FD = new FormData(this);
+    const sparams = new URLSearchParams();
+    for(const pair of FD) {
+        sparams.append(pair[0], pair[1]);
     }
-    console.log(this.responseText);
-    const jsonbody = JSON.parse(this.responseText);
-    const todotable = document.getElementById("table");
-    for(let i = 0; i < jsonbody.length; i++) {
-        const entrybody = document.createElement('tr');
-        entrybody.id = jsonbody[i].id;
-        entrybody.appendChild(newTD(jsonbody[i].description));
-        entrybody.appendChild(newTD(jsonbody[i].dateTime));
-        entrybody.appendChild(deleteButton(jsonbody[i].id));
-        todotable.appendChild(entrybody);
-    }
+    fetch('/todo', {
+        method: 'POST',
+        body: sparams
+    }).catch(err => console.log(err));
+
+    GETrequest();
 });
-GETreq.send();
+
+// GET Handler
+function GETrequest() {
+    fetch('/todo')
+        .then(res => res.json())
+        .then(data => makeTable(data))
+        .catch(err => console.log(err));
+}
+GETrequest();
