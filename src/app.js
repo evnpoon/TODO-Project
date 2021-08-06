@@ -1,19 +1,17 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/frontend'));
 app.use(cors());
-app.set('views', './views');
-app.set('view engine', 'pug');
 
-const TODOarray = [];
-var IDcount = 1;
+var TODOarray = [];
 
 function createTODO(req) {
-    const id = IDcount;
-    IDcount++;
+    const id = Math.floor((1+Math.random()) * 0x1000000000000).toString(36);
     const date = new Date().toISOString();
-    const desc = req.query.description;
+    const desc = req.body.description;
     return {
         id: id,
         dateTime: date,
@@ -22,33 +20,31 @@ function createTODO(req) {
 }
 
 // Backend (POST /todo)
-app.post('/todo', (req, res) => {
-    TODOarray.push(createTODO(req));
+app.post('/todo', cors(), (req, res) => {
+    const newTODO = createTODO(req);
+    TODOarray.push(newTODO);
     res.send(res.statusCode);
 });
 
 // Backend (GET /todo)
-app.get('/todo', (req, res) => {
-    res.render('gettodo', {
-        title: 'TODO Project - GET /todo',
-        header1: 'TODO Array of Objects',
-        pre1: JSON.stringify(TODOarray, null, ' ')
-    })
+app.get('/todo', cors(), (req, res) => {
+    res.send(JSON.stringify(TODOarray));
 });
 
 // Backend (DELETE /todo/id)
-app.delete('/todo/id', (req, res) => {
-    const toDel = TODOarray.find(item => item.id == req.query.id);
+app.delete('/todo/:id', cors(), (req, res) => {
+    const toDel = TODOarray.find(item => item.id === req.params.id);
     if(!toDel) {
-        res.status(404).send('DNE');
+        res.status(404).send('TODO DNE');
+    } else {
+        const index = TODOarray.indexOf(toDel);
+        TODOarray.splice(index, 1);
+        res.send(res.statusCode);
     }
-    const index = TODOarray.indexOf(toDel);
-    TODOarray.splice(index, 1);
-    res.send(res.statusCode);
 });
 
-// Frontend (GET /)
-app.get('/', (req, res) => {
+// Backend (GET /)
+app.get('/', cors(), (req, res) => {
     res.sendFile(__dirname + '/frontend/frontend.html');
 });
 
