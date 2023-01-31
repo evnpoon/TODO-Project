@@ -51,3 +51,8 @@ In addition to adding new items, all existing TODOs must be listed. Each item sh
 - Use JSON middleware to automatically parse JSON body: https://expressjs.com/en/api.html#express.json
 - Use CORS middleware: https://www.npmjs.com/package/cors
 - Start with the backend and test API calls with Insomnia or Postman
+
+# To Run
+- In Terminal, run npm install to update npm
+- Run npm start
+- Go to localhost:(port number)
